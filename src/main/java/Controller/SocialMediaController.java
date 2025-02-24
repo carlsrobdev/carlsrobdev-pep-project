@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import Model.Account;
+import Model.Message;
 import Service.AccountService;
+import Service.MessageService;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
@@ -16,10 +18,12 @@ import io.javalin.http.Context;
 public class SocialMediaController {
 
     AccountService accountService;
+    MessageService messageService;
 
 
     public SocialMediaController() {
         accountService = new AccountService();
+        messageService = new MessageService();
     }
     /**
      * In order for the test cases to work, you will need to write the endpoints in the startAPI() method, as the test
@@ -31,6 +35,7 @@ public class SocialMediaController {
         app.get("example-endpoint", this::exampleHandler);
         app.post("/register", this::register);
         app.post("/login", this::login);
+        app.post("/messages", this::newMessage);
 
         return app;
     }
@@ -64,6 +69,24 @@ public class SocialMediaController {
                 context.json(mapper.writeValueAsString(credentials));
             } else
                 context.status(401);
+    }
+
+    private void newMessage(Context context) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        Message messageInput = mapper.readValue(context.body(), Message.class);
+        if(!messageInput.getMessage_text().isEmpty() && messageInput.getMessage_text().length() <= 255) {
+            Account accountExist = accountService.getAccountById(messageInput.posted_by);
+            if(accountExist != null) {
+                Message message = messageService.createMessage(messageInput);
+                if(message != null) {
+                    context.json(mapper.writeValueAsString(message));
+                } else {
+                    context.status(400);
+                }
+            } else
+                context.status(400);
+        } else
+            context.status(400);
     }
 
 

@@ -46,6 +46,22 @@ public class AccountDAO {
         return account;
     }
 
+    public Account getAccountById(int account_id){
+        Account account = null;
+        try {
+            String sql = "SELECT * FROM account WHERE account_id = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, account_id);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()) {
+                account = new Account(rs.getInt("account_id"), rs.getString("username"), rs.getString("password"));
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        return account;
+    }
+
     public Account verifyAccount(String username, String password){
         Account account = null;
         try {

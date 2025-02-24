@@ -25,5 +25,9 @@ public class AccountService {
     public Account login(Account account) {
         return accountDAO.verifyAccount(account.username, account.password);
     }
+
+    public Account getAccountById(int account_id) {
+        return accountDAO.getAccountById(account_id);
+    }
     
 }
