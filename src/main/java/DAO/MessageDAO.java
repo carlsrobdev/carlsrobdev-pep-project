@@ -1,6 +1,8 @@
 package DAO;
 
 import java.sql.*;
+import java.util.Collection;
+import java.util.LinkedList;
 
 import Model.Message;
 import Util.ConnectionUtil;
@@ -30,5 +32,23 @@ public class MessageDAO {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public Collection<Message> getAllMessages(){
+        Collection<Message> messages = new LinkedList<>();
+        try {
+            
+            String sql = "SELECT * FROM message";
+            Statement ps = connection.createStatement();
+            ResultSet result = ps.executeQuery(sql);
+
+            while (result.next()) {
+                messages.add(new Message(result.getInt(1), result.getInt(2), result.getString(3), result.getLong(4)));
+            }
+            
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        return messages;
     }
 }
