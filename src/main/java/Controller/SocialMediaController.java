@@ -40,6 +40,8 @@ public class SocialMediaController {
         app.post("/login", this::login);
         app.post("/messages", this::newMessage);
         app.get("/messages", this::getMessages);
+        app.get("/messages/{message_id}", this::getMessageById);
+        app.patch("/messages/{message_id}", this::updateMessage);
 
         return app;
     }
@@ -97,6 +99,28 @@ public class SocialMediaController {
         ObjectMapper mapper = new ObjectMapper();
         Collection<Message> messages = messageService.getMessages();
         context.json(mapper.writeValueAsString(messages));
+    }
+
+    private void getMessageById(Context context) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        int messageId = Integer.parseInt(context.pathParam("message_id"));
+        Message message = messageService.getMessageById(messageId);
+        context.json(message != null ? mapper.writeValueAsString(message) : "");
+    }
+
+    private void updateMessage(Context context) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        int messageId = Integer.parseInt(context.pathParam("message_id"));
+        Message messageInput = mapper.readValue(context.body(), Message.class);
+        if(!messageInput.getMessage_text().isEmpty() && messageInput.getMessage_text().length() <= 255) {
+            Message message = messageService.getMessageById(messageId);
+            if(message != null && messageService.updateMessage(messageId, message.getMessage_text())) {
+                message.setMessage_text(messageInput.getMessage_text());
+                context.json(mapper.writeValueAsString(message));
+            } else
+                context.status(400);
+        } else
+            context.status(400);
     }
 
 

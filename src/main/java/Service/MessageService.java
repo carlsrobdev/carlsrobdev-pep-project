@@ -23,4 +23,12 @@ public class MessageService {
     public Collection<Message> getMessages() {
         return messageDAO.getAllMessages();
     }
+
+    public Message getMessageById(int messageId) {
+        return messageDAO.getMessageById(messageId);
+    }
+
+    public boolean updateMessage(int messageId, String message) {
+        return messageDAO.updateMessageText(messageId, message);
+    }
 }

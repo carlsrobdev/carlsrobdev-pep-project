@@ -51,4 +51,38 @@ public class MessageDAO {
         }
         return messages;
     }
+
+    public Message getMessageById(int id){
+        Message message = null;
+        try {
+            
+            String sql = "SELECT * FROM message WHERE message_id = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+
+            ps.setInt(1, id);
+            ResultSet result = ps.executeQuery();
+
+            while (result.next()) {
+                message = new Message(result.getInt(1), result.getInt(2), result.getString(3), result.getLong(4));
+            }
+            
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        return message;
+    }
+
+    public boolean updateMessageText(int message_Id, String message){
+        try {
+            String sql = "UPDATE message SET message_text = ? WHERE message_id = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, message);
+            ps.setInt(2, message_Id);
+            int rowsUpdated = ps.executeUpdate();
+            return rowsUpdated > 0;
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
