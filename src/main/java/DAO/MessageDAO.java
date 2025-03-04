@@ -72,17 +72,47 @@ public class MessageDAO {
         return message;
     }
 
-    public boolean updateMessageText(int message_Id, String message){
+    public boolean updateMessageText(int messageId, String message){
         try {
             String sql = "UPDATE message SET message_text = ? WHERE message_id = ?";
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setString(1, message);
-            ps.setInt(2, message_Id);
+            ps.setInt(2, messageId);
             int rowsUpdated = ps.executeUpdate();
             return rowsUpdated > 0;
         }catch(SQLException e){
             e.printStackTrace();
         }
         return false;
+    }
+
+    public Collection<Message> getMessagesByAccount(int postedBy){
+        Collection<Message> messages = new LinkedList<>();
+        try {
+            
+            String sql = "SELECT * FROM message WHERE posted_by = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, postedBy);
+            ResultSet result = ps.executeQuery();
+
+            while (result.next()) {
+                messages.add(new Message(result.getInt(1), result.getInt(2), result.getString(3), result.getLong(4)));
+            }
+            
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        return messages;
+    }
+
+    public void deleteMessageText(int messageId){
+        try {
+            String sql = "DELETE FROM message WHERE message_id = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, messageId);
+            ps.executeUpdate();
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
     }
 }

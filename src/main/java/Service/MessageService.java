@@ -31,4 +31,12 @@ public class MessageService {
     public boolean updateMessage(int messageId, String message) {
         return messageDAO.updateMessageText(messageId, message);
     }
+
+    public Collection<Message> getMessagesByAccount(int postedBy) {
+        return messageDAO.getMessagesByAccount(postedBy);
+    }
+
+    public void deleteMessage(int messageId) {
+        messageDAO.deleteMessageText(messageId);
+    }
 }
